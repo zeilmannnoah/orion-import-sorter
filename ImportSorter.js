@@ -3,7 +3,7 @@ const {
 } = require('vscode');
 
 const importRegex = new RegExp(/import(?:["'\s]*([\w*${}\n\r\t, ]+)from\s*)?["'\s]["'\s](.*[@\w_-]+)["'\s].*;$/, 'mg'),
-    localFileRegex = /.+\/(\w+)$/;
+    localFileRegex = /\.+\/(?:.+\/|)(\w+)/;
 
 const sortImports = () => {
     if (!window.activeTextEditor || !window.activeTextEditor.document) {
