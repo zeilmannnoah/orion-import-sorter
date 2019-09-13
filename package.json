@@ -1,27 +1,45 @@
 {
 	"name": "orion-import-sorter",
-	"displayName": "orion-import-sorter",
-	"description": "Visual Studios code extension made to sort imports",
-	"version": "0.0.2",
+	"displayName": "Orion Import Sorter",
+	"description": "Visual Studios code extension made to sort ES6 imports",
+	"version": "0.0.3",
 	"publisher": "zeilmannnoah",
 	"repository": "https://github.com/zeilmannnoah/orion-import-sorter",
 	"engines": {
 		"vscode": "^1.6.0"
 	},
 	"categories": [
-		"Other"
+		"Formatters"
 	],
 	"activationEvents": [
-		"onCommand:orion.sortImports"
+		"onCommand:orion.sortSelectedImports",
+		"onCommand:orion.randomizeSelectedImports",
+		"onLanguage:javascript",
+		"onLanguage:javascriptreact"
 	],
 	"main": "./extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "orion.sortImports",
-				"title": "Sort Imports"
+				"command": "orion.sortSelectedImports",
+				"title": "Orion - Sort Selected Imports"
+			},
+			{
+				"command": "orion.randomizeSelectedImports",
+				"title": "Orion - Randomize Selected Imports"
 			}
 		]
+	},
+	"configuration": {
+		"type": "object",
+		"title": "Orion",
+		"properties": {
+			"orion.sortImportsOnSave": {
+				"type": "boolean",
+				"default": true,
+				"description": "Automatically sort imports on save."
+			}
+		}
 	},
 	"scripts": {
 		"test": "node ./test/runTest.js"

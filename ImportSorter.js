@@ -1,8 +1,6 @@
-const {
-    window, 
-} = require('vscode');
-
+const { window, workspace } = require('vscode');
 const importRegex = new RegExp(/import(?:["'\s]*([\w*${}\n\r\t, ]+)from\s*)?["'\s]["'\s](.*[@\w_-]+)["'\s].*;$/, 'mg'),
+    importBlockRegex = /(import[\s\S]+(?:from|)\s(?:'|"|`)[\w-\.\/]+(?:'|"|`);)([\s\S]+)/,
     localFileRegex = /\.+\/(?:.+\/|)(\w+)/;
 
 const sortImports = () => {
@@ -12,15 +10,69 @@ const sortImports = () => {
 
     try {
         const selectionRange = window.activeTextEditor.selection.with(),
-            text = window.activeTextEditor.document.getText(selectionRange);
+            text = importBlockRegex.exec(window.activeTextEditor.document.getText(selectionRange)),
+            importBlock = text[1],
+            additionalText = text[2];
 
         window.activeTextEditor.edit(textEditor => {
-            const sortedImported = extractImports(text).sort(compareImports);
+            const sortedImports = extractImports(importBlock).sort(compareImports);
 
-            textEditor.replace(selectionRange, sortedImported.map(statement => statement.line).join('\n'));
+            textEditor.replace(selectionRange, `${sortedImports.map(statement => statement.line).join('\n')}${additionalText}`);
         });
+        
+        window.showInformationMessage('Imports sorted!');
     } catch (error) {
         window.showErrorMessage(`Orion import sorter failed with error - ${error.message}`);
+    }
+}
+
+const randomizeImports = () => {
+    if (!window.activeTextEditor || !window.activeTextEditor.document) {
+        return;
+    }
+
+    try {
+        const selectionRange = window.activeTextEditor.selection.with(),
+            text = importBlockRegex.exec(window.activeTextEditor.document.getText(selectionRange)),
+            importBlock = text[1],
+            additionalText = text[2];
+
+        window.activeTextEditor.edit(textEditor => {
+            const randomizedImports = shuffle(extractImports(importBlock));
+
+            textEditor.replace(selectionRange, `${randomizedImports.map(statement => statement.line).join('\n')}${additionalText}`);
+        });
+        window.showInformationMessage('Imports randomized!');
+    } catch (error) {
+        window.showErrorMessage(`Orion import sorter failed with error - ${error.message}`);
+    }
+}
+
+const sortImportsOnSave = () => {
+    if(workspace.getConfiguration('orion').get('sortImportsOnSave')) {
+        if (!window.activeTextEditor || !window.activeTextEditor.document) {
+            return;
+        }
+    
+        try {
+            const selectionRange = window.activeTextEditor.visibleRanges[0],
+                text = importBlockRegex.exec(window.activeTextEditor.document.getText(selectionRange)),
+                importBlock = text[1],
+                additionalText = text[2];
+                
+            window.activeTextEditor.edit(textEditor => {
+                const imports = extractImports(importBlock),
+                    sortedImports = [...imports].sort(compareImports);
+                    
+                if (!importsEqual(imports, sortedImports)) {
+                    textEditor.replace(selectionRange, `${sortedImports.map(statement => statement.line).join('\n')}${additionalText}`);
+                    window.showInformationMessage('Imports sorted!');
+                }
+            });
+
+        } catch (error) {
+            window.showErrorMessage(`Orion import sorter failed with error - ${error.message}`);
+        }
     }
 }
 
@@ -62,11 +114,12 @@ const compareImports = (importA, importB) => {
         return 1
     }
 
-    if (importA.moduleType === 'terra') {
+    // Handle Local files
+    if (importA.moduleType === 'local') {
         return -1
     }
 
-    if (importB.moduleType ==='terra') {
+    if (importB.moduleType ==='local') {
         return 1
     }
 }
@@ -98,8 +151,8 @@ const extractImports = (textContent) => {
                 moduleType = 'terra';
             }
             else if (fileName) {
-                moduleType = 'local';
                 fileName = fileName[1]
+                moduleType = importedName === 'style ' ? 'style' : 'local';
             }
             else {
                 moduleType = 'npm';
@@ -110,8 +163,23 @@ const extractImports = (textContent) => {
     } while (importCapture);
 
     return importStatements;
+
+}
+
+const shuffle = (a) => {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+const importsEqual = (importA, importB) => {
+    return Object.keys(importA).length === Object.keys(importB).length && Object.keys(importA).every(p => importA[p] === importB[p]);
 }
 
 module.exports = {
-    sortImports
+    sortImports,
+    randomizeImports,
+    sortImportsOnSave
 };
