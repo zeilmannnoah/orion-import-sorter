@@ -2,9 +2,11 @@
 	"name": "orion-import-sorter",
 	"displayName": "orion-import-sorter",
 	"description": "Visual Studios code extension made to sort imports",
-	"version": "0.0.1",
+	"version": "0.0.2",
+	"publisher": "zeilmannnoah",
+	"repository": "https://github.com/zeilmannnoah/orion-import-sorter",
 	"engines": {
-		"vscode": "^1.38.0"
+		"vscode": "^1.6.0"
 	},
 	"categories": [
 		"Other"
@@ -14,10 +16,12 @@
 	],
 	"main": "./extension.js",
 	"contributes": {
-		"commands": [{
-            "command": "orion.sortImports",
-			"title": "Sort Imports"
-		}]
+		"commands": [
+			{
+				"command": "orion.sortImports",
+				"title": "Sort Imports"
+			}
+		]
 	},
 	"scripts": {
 		"test": "node ./test/runTest.js"
@@ -26,7 +30,7 @@
 		"@types/glob": "^7.1.1",
 		"@types/mocha": "^5.2.6",
 		"@types/node": "^10.12.21",
-		"@types/vscode": "^1.38.0",
+		"@types/vscode": "^1.6.0",
 		"eslint": "^5.13.0",
 		"glob": "^7.1.4",
 		"mocha": "^6.1.4",
