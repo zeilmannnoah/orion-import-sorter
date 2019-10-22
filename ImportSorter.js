@@ -80,6 +80,13 @@ const compareImports = (importA, importB) => {
     // Handle common module types
     if (importA.moduleType === importB.moduleType) {
         if (importA.fileName) {
+            if (importA.fileName.includes('actions')) {
+                return 1;
+            }
+            else if (importB.fileName.includes('actions')) {
+                return -1;
+            }
+
             return importA.fileName.localeCompare(importB.fileName);
         }
         else {

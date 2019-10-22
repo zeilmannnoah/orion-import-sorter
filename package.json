@@ -2,7 +2,7 @@
 	"name": "orion-import-sorter",
 	"displayName": "Orion Import Sorter",
 	"description": "Visual Studios code extension made to sort ES6 imports",
-	"version": "0.0.3",
+	"version": "0.0.5",
 	"publisher": "zeilmannnoah",
 	"repository": "https://github.com/zeilmannnoah/orion-import-sorter",
 	"engines": {
@@ -36,7 +36,7 @@
 		"properties": {
 			"orion.sortImportsOnSave": {
 				"type": "boolean",
-				"default": true,
+				"default": false,
 				"description": "Automatically sort imports on save."
 			}
 		}

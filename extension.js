@@ -2,12 +2,8 @@ const { commands, workspace }  = require('vscode');
 const { sortImports, randomizeImports, sortImportsOnSave } = require('./ImportSorter');
 
 function activate(context) {
-	const sortSubscription = commands.registerCommand('orion.sortSelectedImports', () => {
-			sortImports();
-		}),
-		randomizeSubscription = commands.registerCommand('orion.randomizeSelectedImports', () => {
-			randomizeImports();
-		}),
+	const sortSubscription = commands.registerCommand('orion.sortSelectedImports', sortImports),
+		randomizeSubscription = commands.registerCommand('orion.randomizeSelectedImports', randomizeImports),
 		onSaveSortSubscription = workspace.onWillSaveTextDocument(sortImportsOnSave);
 
 	context.subscriptions.push(sortSubscription);
